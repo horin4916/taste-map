@@ -28,13 +28,19 @@
             slide.className = 'swiper-slide';
             slide.style.backgroundImage = `url('${item.coverImage}')`;
             
-            // 별점 로직: 0.5점까지 정확히 표현
+            // 새로운 별점 로직
             let fullStars = Math.floor(item.rating);
             let hasHalf = (item.rating % 1 !== 0);
-            let starHTML = '⭐'.repeat(fullStars);
+            
+            // 1. 노란 별(⭐)을 점수만큼 그립니다.
+            let starHTML = '<span style="font-size: 1.1rem; color: #f1c40f;">' + '⭐'.repeat(fullStars);
+            
+            // 2. 0.5점이 있으면 회색 빈 별(☆)을 하나 추가합니다.
             if (hasHalf) {
-                starHTML += '<span style="position:relative; display:inline-block; color:#f1c40f;">⭐<span style="position:absolute; left:0; width:50%; overflow:hidden; color:#f1c40f;">⭐</span></span>';
+                starHTML += '<span style="color: #ddd;">☆</span>';
             }
+            
+            starHTML += '</span>';
 
             slide.innerHTML = `<div class="info-box">
                 <h3>${item.title} (${item.year})</h3>
