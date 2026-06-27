@@ -13,6 +13,34 @@
         .rating { color: #f1c40f; font-size: 1rem; margin-bottom: 8px; }
         .review { font-size: 0.95rem; color: #dcdde1; margin-bottom: 8px; }
         .tags { color: #00a8ff; font-size: 0.85rem; font-weight: bold; }
+        /* 별점 컨테이너 */
+        .star-rating {
+            display: inline-block;
+            font-size: 1.2rem;
+            font-family: sans-serif;
+            color: #ddd; /* 회색 바탕 (빈 별) */
+            position: relative;
+        }
+        
+        /* 꽉 찬 별을 표현하는 클래스 */
+        .star-filled {
+            color: #f1c40f; /* 노란색 */
+        }
+        
+        /* 반쪽 별을 표현하는 핵심 CSS */
+        .star-half {
+            position: relative;
+            color: #ddd; /* 빈 별을 기본으로 */
+        }
+        .star-half::after {
+            content: '⭐'; /* 별 문자 */
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 50%; /* 딱 절반만 */
+            overflow: hidden;
+            color: #f1c40f; /* 색상은 노란색 */
+        }
     </style>
 </head>
 <body>
@@ -28,19 +56,22 @@
             slide.className = 'swiper-slide';
             slide.style.backgroundImage = `url('${item.coverImage}')`;
             
-            // 새로운 별점 로직
+            // 별점 로직
             let fullStars = Math.floor(item.rating);
             let hasHalf = (item.rating % 1 !== 0);
+            let starHTML = '<span class="star-rating">';
             
-            // 1. 노란 별(⭐)을 점수만큼 그립니다.
-            let starHTML = '<span style="font-size: 1.1rem; color: #f1c40f;">' + '⭐'.repeat(fullStars);
+            // 1. 꽉 찬 별 추가
+            starHTML += '<span class="star-filled">' + '⭐'.repeat(fullStars) + '</span>';
             
-            // 2. 0.5점이 있으면 회색 빈 별(☆)을 하나 추가합니다.
+            // 2. 0.5점이 있으면 반쪽 별 추가
             if (hasHalf) {
-                starHTML += '<span style="color: #ddd;">☆</span>';
+                starHTML += '<span class="star-half">⭐</span>';
             }
             
             starHTML += '</span>';
+            
+            // 이후 slide.innerHTML 부분에 starHTML을 넣으면 됩니다.
 
             slide.innerHTML = `<div class="info-box">
                 <h3>${item.title} (${item.year})</h3>
