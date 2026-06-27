@@ -98,11 +98,27 @@
                 genre: document.getElementById('genreInput').value,
                 myShortReview: document.getElementById('reviewInput').value,
                 rating: parseFloat(document.getElementById('ratingInput').value),
-                keywords: document.getElementById('keywordsInput').value.split(',').map(s => s.trim())
-            };
-            document.getElementById('jsonOutput').innerText = JSON.stringify(finalData, null, 2) + ",";
-            document.getElementById('copyBtn').style.display = 'block';
-        }
+                // 키워드 입력값 가져오기 (띄어쓰기 기준으로 나눔)
+                const keywordsRaw = document.getElementById('keywordsInput').value;
+                
+                // 1. 공백(띄어쓰기)을 기준으로 자르기
+                // 2. 각 단어 앞에 '#' 붙이기
+                // 3. 빈 값 제거
+                const keywordsArray = keywordsRaw
+                    .split(/\s+/) // 여러 개의 띄어쓰기/엔터를 기준으로 자름
+                    .filter(item => item !== "") // 빈 문자열 제거
+                    .map(item => item.startsWith('#') ? item : '#' + item); // #이 없으면 붙여줌
+            
+                const finalData = {
+                    ...tempMovieData,
+                    myShortReview: review,
+                    rating: rating,
+                    keywords: keywordsArray // ['#영화', '#인셉션', '#SF'] 형태로 저장됨
+                };
+                
+                document.getElementById('jsonOutput').innerText = JSON.stringify(finalData, null, 2) + ",";
+                document.getElementById('copyBtn').style.display = 'block';
+            }
 
         function copyJSON() {
             navigator.clipboard.writeText(document.getElementById('jsonOutput').innerText);
