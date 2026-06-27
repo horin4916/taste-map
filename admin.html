@@ -45,6 +45,11 @@
         const TMDB_API_KEY = '8be63dbb9d106e3c4c084a3832bc07f9'; 
         let tempMovieData = {};
 
+        // 1. 엔터키로 검색하기
+        document.getElementById('searchTitle').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchMovie();
+        });
+
         async function searchMovie() {
             const title = document.getElementById('searchTitle').value;
             const status = document.getElementById('searchStatus');
@@ -54,21 +59,15 @@
             status.innerText = "검색 중...";
 
             try {
-                // 1. 영화 검색
                 const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&language=ko-KR&query=${encodeURIComponent(title)}`);
                 const data = await res.json();
 
                 if (data.results && data.results.length > 0) {
                     const m = data.results[0];
-                    const movieId = m.id;
-
-                    // 2. 추가 정보(감독, 장르) 가져오기
-                    const detailsRes = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=ko-KR&append_to_response=credits`);
+                    const detailsRes = await fetch(`https://api.themoviedb.org/3/movie/${m.id}?api_key=${TMDB_API_KEY}&language=ko-KR&append_to_response=credits`);
                     const details = await detailsRes.json();
 
-                    // 감독 찾기 (Job이 'Director'인 사람)
                     const director = details.credits.crew.find(c => c.job === 'Director')?.name || "정보 없음";
-                    // 장르 가져오기
                     const genres = details.genres.map(g => g.name).join(', ');
 
                     tempMovieData = {
@@ -81,8 +80,17 @@
                         genre: genres
                     };
 
+                    // 자동 채우기
                     document.getElementById('directorInput').value = director;
                     document.getElementById('genreInput').value = genres;
+
+                    // 2. 검색 시 사용자 입력값만 리셋
+                    document.getElementById('ratingInput').value = "";
+                    document.getElementById('reviewInput').value = "";
+                    document.getElementById('keywordsInput').value = "";
+                    document.getElementById('jsonOutput').innerText = "이곳에 코드가 생성됩니다.";
+                    document.getElementById('copyBtn').style.display = 'none';
+
                     status.innerText = `성공! "${m.title}" 정보를 가져왔습니다.`;
                 }
             } catch (err) {
