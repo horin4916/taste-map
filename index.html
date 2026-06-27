@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>취미바이브 - 나만의 취미 지도</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <style>
+        body { 
+            background-color: #121212; 
+            color: white; 
+            font-family: 'Pretendard', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        h2 { margin-bottom: 5px; color: #f5f6fa; }
+        .subtitle { color: #7f8fa6; font-size: 0.9rem; margin-bottom: 30px; }
+        
+        /* 카드 슬라이드 크기 설정 */
+        .swiper { width: 320px; height: 480px; }
+        .swiper-slide { 
+            background-position: center; 
+            background-size: cover; 
+            border-radius: 12px; 
+            box-shadow: 0 15px 50px rgba(0,0,0,0.6); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-end; 
+            overflow: hidden;
+        }
+        
+        /* 하단 설명(리뷰) 박스 디자인 */
+        .info-box { 
+            background: rgba(0, 0, 0, 0.75); 
+            padding: 20px; 
+            backdrop-filter: blur(8px); 
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .info-box h3 { margin: 0 0 8px 0; font-size: 1.2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+        .rating { color: #f1c40f; font-size: 0.9rem; margin-bottom: 8px; }
+        .review { margin: 0 0 12px 0; font-size: 0.95rem; line-height: 1.5; color: #dcdde1; }
+        .tags { color: #00a8ff; font-size: 0.85rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h2>🗺️ 나의 취미 지도</h2>
+    <p class="subtitle">카드를 좌우로 스와이프하여 넘겨보세요!</p>
+
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper" id="card-container">
+            </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+        // 1. data.json 파일 불러오기
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('card-container');
+                
+                // 2. 데이터 개수만큼 카드 만들기
+                data.forEach(item => {
+                    const slide = document.createElement('div');
+                    slide.className = 'swiper-slide';
+                    
+                    // 포스터 이미지를 카드 배경으로 설정
+                    slide.style.backgroundImage = `url('${item.coverImage}')`;
+
+                    // 별점 숫자를 진짜 별 아이콘으로 변환
+                    let stars = '⭐'.repeat(Math.floor(item.rating)) + (item.rating % 1 !== 0 ? '✨' : '');
+
+                    // 카드 하단에 들어갈 정보 조립
+                    slide.innerHTML = `
+                        <div class="info-box">
+                            <h3>${item.title} (${item.year})</h3>
+                            <div class="rating">${stars} ${item.rating}</div>
+                            <p class="review">${item.myShortReview}</p>
+                            <div class="tags">${item.keywords.join(' ')}</div>
+                        </div>
+                    `;
+                    container.appendChild(slide);
+                });
+
+                // 3. 카드 넘기기 애니메이션(Cards 효과) 실행
+                new Swiper(".mySwiper", {
+                    effect: "cards",
+                    grabCursor: true,
+                });
+            })
+            .catch(error => {
+                console.error('데이터를 불러오지 못했습니다:', error);
+                document.getElementById('card-container').innerHTML = '<p style="color:white; text-align:center;">data.json 파일에 데이터를 먼저 추가해주세요!</p>';
+            });
+    </script>
+</body>
+</html>
