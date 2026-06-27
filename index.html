@@ -8,18 +8,14 @@
     <style>
         body { background-color: #121212; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
         .swiper { width: 320px; height: 480px; }
-        .swiper-slide { background-position: center; background-size: cover; border-radius: 12px; box-shadow: 0 15px 50px rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
-        .info-box { background: rgba(0, 0, 0, 0.75); padding: 20px; backdrop-filter: blur(8px); border-top: 1px solid rgba(255,255,255,0.1); }
-        .rating { display: flex; align-items: center; gap: 2px; margin-bottom: 8px; }
-        .review { font-size: 0.95rem; color: #dcdde1; margin-bottom: 8px; }
-        .tags { color: #00a8ff; font-size: 0.85rem; font-weight: bold; }
-        
-        /* 이미지 기반 별점 스타일 */
-        .star-img {
-            width: 20px;
-            height: 20px;
-            object-fit: contain;
-        }
+        .swiper-slide { background-position: center; background-size: cover; border-radius: 12px; box-shadow: 0 15px 50px rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; cursor: pointer; }
+        .info-box { background: rgba(0, 0, 0, 0.8); padding: 20px; backdrop-filter: blur(8px); border-top: 1px solid rgba(255,255,255,0.1); }
+        .info-box h3 { margin: 0 0 5px 0; font-size: 1.2rem; }
+        .meta-info { font-size: 0.85rem; color: #aaa; margin-bottom: 10px; }
+        .rating { display: flex; align-items: center; gap: 2px; margin-bottom: 10px; }
+        .review { font-size: 0.95rem; color: #dcdde1; margin-bottom: 10px; line-height: 1.4; }
+        .tags { color: #00a8ff; font-size: 0.8rem; font-weight: bold; }
+        .star-img { width: 18px; height: 18px; object-fit: contain; }
     </style>
 </head>
 <body>
@@ -35,25 +31,24 @@
             slide.className = 'swiper-slide';
             slide.style.backgroundImage = `url('${item.coverImage}')`;
             
-            // 별점 로직: 이미지를 개수대로 생성
+            // 클릭 시 TMDB 상세 페이지 이동
+            slide.onclick = () => {
+                if(item.tmdbId) window.open(`https://www.themoviedb.org/movie/${item.tmdbId}`, '_blank');
+            };
+            
+            // 별점 로직: 숫자 표기 삭제, 오직 이미지로만 표기
             let fullStars = Math.floor(item.rating);
             let hasHalf = (item.rating % 1 !== 0);
-            
             let starHTML = '';
-            // 1. 노란 별(y_star.png) 생성
-            for(let i = 0; i < fullStars; i++) {
-                starHTML += `<img src="images/y_star.png" class="star-img">`;
-            }
-            // 2. 반쪽 별(g_star.png) 생성
-            if(hasHalf) {
-                starHTML += `<img src="images/g_star.png" class="star-img">`;
-            }
+            for(let i = 0; i < fullStars; i++) starHTML += `<img src="images/y_star.png" class="star-img">`;
+            if(hasHalf) starHTML += `<img src="images/g_star.png" class="star-img">`;
 
             slide.innerHTML = `<div class="info-box">
                 <h3>${item.title} (${item.year})</h3>
-                <div class="rating">${starHTML} (${item.rating}점)</div>
+                <div class="meta-info">${item.director} | ${item.genre}</div>
+                <div class="rating">${starHTML}</div>
                 <p class="review">${item.myShortReview}</p>
-                <div class="tags">${item.keywords.join(' ')}</div>
+                <div class="tags">${Array.isArray(item.keywords) ? item.keywords.join(' ') : item.keywords}</div>
             </div>`;
             container.appendChild(slide);
         });
