@@ -59,7 +59,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
         // 1. data.json 파일 불러오기
-        fetch('/taste-map/data.json')
+        fetch('https://raw.githubusercontent.com/horin4916/taste-map/refs/heads/main/data.json')
             .then(response => response.json())
             .then(data => {
                 const container = document.getElementById('card-container');
