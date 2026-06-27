@@ -37,7 +37,30 @@
             slide.className = 'swiper-slide';
             slide.style.backgroundImage = `url('${item.coverImage}')`;
 
-            let stars = '⭐'.repeat(Math.floor(item.rating));
+            // 별점 계산 로직
+            let fullStars = Math.floor(item.rating);
+            let hasHalf = (item.rating % 1 !== 0);
+            
+            let starHTML = '<span class="star-rating">';
+            // 꽉 찬 별
+            starHTML += '⭐'.repeat(fullStars);
+            // 반쪽 별 (조합형으로 표현)
+            if (hasHalf) {
+                starHTML += '<span style="position:relative; display:inline-block;">';
+                starHTML += '<span style="color:#ddd;">⭐</span>'; // 회색 별 바탕
+                starHTML += '<span style="position:absolute; left:0; width:50%; overflow:hidden;">⭐</span>'; // 노란색 별을 반만 보이게
+                starHTML += '</span>';
+            }
+            starHTML += '</span>';
+
+            slide.innerHTML = `
+                <div class="info-box">
+                    <h3>${item.title} (${item.year})</h3>
+                    <div class="rating">${starHTML} (${item.rating})</div>
+                    <p class="review">${item.myShortReview}</p>
+                    <div class="tags">${Array.isArray(item.keywords) ? item.keywords.join(' ') : item.keywords}</div>
+                </div>
+            `;
             
             slide.innerHTML = `
                 <div class="info-box">
